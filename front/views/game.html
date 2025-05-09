@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    {{> head}}
+</head>
+
+<body>
+
+    <div id="myBoard" style="width: 700px"></div>
+    <label>Status:</label>
+    <div id="status"></div>
+
+    <div id="chatBox">
+        <ul id="chatMessages"></ul>
+        <input type="text" id="chatInput" placeholder="Type a message..." />
+        <button id="sendMessage">Send</button>
+    </div>
+
+    <label>PGN:</label>
+    <div id="pgn"></div>
+
+    <script>
+        let playerColor = '{{color}}';
+        console.log('Playing as ' + playerColor);
+
+        document.getElementById('sendMessage').addEventListener('click', function () {
+            const messageText = document.getElementById('chatInput').value;
+            if (messageText.trim() !== '') {
+                const message = {
+                    text: messageText,
+                    sender: playerColor,  // Color of the player (white or black)
+                    timestamp: new Date().toLocaleTimeString()
+                };
+                socket.emit('chatMessage', message); // Send the message to the server
+                document.getElementById('chatInput').value = ''; // Clear the input box
+            }
+        });
+    </script>
+    <script src="/public/js/index.js"></script>
+
+</body>
+
+</html>
