@@ -1,43 +1,58 @@
 <html>
-
-<head>
+  <head>
     {{> head}}
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div id="myBoard" style="width: 700px"></div>
     <label>Status:</label>
     <div id="status"></div>
 
+    <!-- Chat Box Section -->
     <div id="chatBox">
-        <ul id="chatMessages"></ul>
-        <input type="text" id="chatInput" placeholder="Type a message..." />
+      <ul id="chatMessages"></ul>
+
+      <!-- Chat Input (hidden for spectators) -->
+      <div id="chatInput">
+        <input type="text" id="message" placeholder="Type a message..." />
         <button id="sendMessage">Send</button>
+      </div>
+
+      <!-- Spectator message (only visible for spectators) -->
+      <div id="spectatorMessage" style="display: none">
+        You are in Spectator mode
+      </div>
     </div>
 
     <label>PGN:</label>
     <div id="pgn"></div>
 
     <script>
-        let playerColor = '{{color}}';
-        console.log('Playing as ' + playerColor);
+      let playerColor = "{{color}}"; // 'spectator' for spectators
+      console.log("Playing as " + playerColor);
 
-        document.getElementById('sendMessage').addEventListener('click', function () {
-            const messageText = document.getElementById('chatInput').value;
-            if (messageText.trim() !== '') {
-                const message = {
-                    text: messageText,
-                    sender: playerColor,  // Color of the player (white or black)
-                    timestamp: new Date().toLocaleTimeString()
-                };
-                socket.emit('chatMessage', message); // Send the message to the server
-                document.getElementById('chatInput').value = ''; // Clear the input box
-            }
+      if (playerColor === "spectator") {
+        // Hide chat input for spectators
+        document.getElementById("chatInput").style.display = "none"; // Hide chat input for spectators
+        document.getElementById("spectatorMessage").style.display = "block"; // Show spectator message
+      }
+
+      document
+        .getElementById("sendMessage")
+        .addEventListener("click", function () {
+          const messageText = document.getElementById("message").value;
+          if (messageText.trim() !== "" && playerColor !== "spectator") {
+            const message = {
+              text: messageText,
+              sender: playerColor, // Color of the player (white or black)
+              timestamp: new Date().toLocaleTimeString(),
+            };
+            socket.emit("chatMessage", message); // Send the message to the server
+            document.getElementById("message").value = ""; // Clear the input box
+          }
         });
     </script>
+
     <script src="/public/js/index.js"></script>
-
-</body>
-
+  </body>
 </html>
